@@ -1,0 +1,11 @@
+.header {
+  background-color: gray;
+  color: black;
+}
+.headerlist {
+  display: "flex";
+  list-style: "none";
+  justify-content: "space-between";
+  padding: "1rem";
+  margin: 0;
+}
