@@ -8,7 +8,9 @@ const Register = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (token) navigate("/dashboard");
+    if (token) {
+      navigate("/dashboard");
+    }
   }, [token, navigate]);
 
   const [values, setValues] = useState({
@@ -19,15 +21,20 @@ const Register = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [valid, setValid] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setValues((prevValues) => ({ ...prevValues, [name]: value }));
+    setValues((values) => ({
+      ...values,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (
       !values.name ||
       !values.email ||
@@ -45,23 +52,24 @@ const Register = () => {
       );
       if (response.data.success) {
         setSubmitted(true);
+        setValid(true);
         setRegistrationStatus("success");
         setTimeout(() => {
           setSubmitted(false);
           navigate("/login");
         }, 3000);
       } else {
+        setValid(false);
         setSubmitted(true);
         setRegistrationStatus("failed");
       }
     } catch (error) {
       console.error("Error registering user:", error);
+      setValid(false);
       setSubmitted(true);
       setRegistrationStatus("error");
     }
   };
-
-  const formdata = ["name", "email", "mobileNumber", "password"];
 
   return (
     <div className="register">
@@ -73,24 +81,67 @@ const Register = () => {
         <div className="form-container">
           <h1 style={{ textAlign: "center" }}>Register Form</h1>
           <form className="register-form" onSubmit={handleSubmit}>
-            {formdata.map((field) => (
-              <React.Fragment key={field}>
-                {!submitted && (
-                  <input
-                    className="form-field"
-                    type={field === "password" ? "password" : "text"}
-                    placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                    name={field}
-                    value={values[field]}
-                    onChange={handleInputChange}
-                  />
-                )}
-                {submitted && !values[field] && (
-                  <span id={`${field}-error`}>Please enter a {field}</span>
-                )}
-              </React.Fragment>
-            ))}
-            {!submitted && (
+            {!valid && (
+              <input
+                className="form-field"
+                type="text"
+                placeholder="Name"
+                name="name"
+                value={values.name}
+                onChange={handleInputChange}
+              />
+            )}
+
+            {submitted && !values.name && (
+              <span id="name-error">Please enter a name</span>
+            )}
+
+            {!valid && (
+              <input
+                className="form-field"
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={values.email}
+                onChange={handleInputChange}
+              />
+            )}
+
+            {submitted && !values.email && (
+              <span id="email-error">Please enter an email address</span>
+            )}
+
+            {!valid && (
+              <input
+                className="form-field"
+                type="text"
+                placeholder="Mobile Number"
+                name="mobileNumber"
+                value={values.mobileNumber}
+                onChange={handleInputChange}
+              />
+            )}
+
+            {submitted && !values.mobileNumber && (
+              <span id="mobile-number-error">Please enter a mobile number</span>
+            )}
+
+            {!valid && (
+              <input
+                className="form-field"
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={values.password}
+                onChange={handleInputChange}
+              />
+            )}
+
+            {submitted && !values.password && (
+              <span id="password-error">Please enter a password</span>
+            )}
+
+            {!valid && (
               <button className="form-field" type="submit">
                 Register
               </button>
@@ -100,8 +151,13 @@ const Register = () => {
             style={{ cursor: "pointer", color: "green", textAlign: "center" }}
             onClick={() => navigate("/login")}
           >
-            Already a customer
+            Already a costomer
           </p>
+          {submitted && registrationStatus === "success" && (
+            <div className="register-success">
+              Registration successful. Redirecting to login page...
+            </div>
+          )}
           {registrationStatus === "failed" && (
             <div className="register-error">
               User already registered. Please use a different email or mobile.

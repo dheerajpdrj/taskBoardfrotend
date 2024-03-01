@@ -25,6 +25,10 @@ const Login = ({ setToken }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!credentials.email || !credentials.password) {
+      setSubmitted(true);
+      return;
+    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}auth/login`,
